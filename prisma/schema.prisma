@@ -1,0 +1,35 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String?
+  address   String?
+  phone     String?
+  createdAt DateTime @default(now())
+  invoices  Invoice[]
+}
+
+model Invoice {
+  id        Int      @id @default(autoincrement())
+  clientId  Int
+  items     Json
+  total     Float
+  status    InvoiceStatus @default(Pending)
+  dueDate   DateTime
+  createdAt DateTime @default(now())
+  client    Client   @relation(fields: [clientId], references: [id])
+}
+
+enum InvoiceStatus {
+  Pending
+  Paid
+  Overdue
+}
